@@ -35,8 +35,12 @@ import java.util.List;
 @ConditionalOnProperty(prefix = "swagger2", name = "enable", havingValue = "true")
 public class Swagger2AutoConfiguration {
 
-    @Autowired
     private Swagger2Properties swagger2Properties;
+
+    @Autowired
+    Swagger2AutoConfiguration(Swagger2Properties swagger2Properties) {
+        this.swagger2Properties = swagger2Properties;
+    }
 
     /**
      * header
@@ -65,7 +69,7 @@ public class Swagger2AutoConfiguration {
     @Bean
     public UiConfiguration uiConfiguration() {
         UiConfigurationBuilder builder = UiConfigurationBuilder.builder();
-        return builder.filter(true).build();
+        return builder.filter(true).validatorUrl("").build();
     }
 
     private ApiInfo apiInfo() {
