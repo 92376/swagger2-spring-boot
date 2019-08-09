@@ -18,3 +18,41 @@ swagger2:
 ```
 http://${ip}:${port}/${contextPath}/swagger-ui.html
 ```
+> 4、zuul集成,同上,再添加整合配置类，代码如下
+```java
+/**
+ * 整合各服务的swagger
+ *
+ * @author wujing
+ * @since 2019/7/31 14:37
+ */
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    @Primary
+    public SwaggerResourcesProvider swaggerResourcesProvider(RouteLocator routeLocator) {
+        return () -> {
+            List<SwaggerResource> resources = new ArrayList<>();
+            // (path和serviceId都可以访问), 去重处理
+            Set<String> routIds = new HashSet<>();
+            for (Route route : routeLocator.getRoutes()) {
+                if (routIds.add(route.getId())) {
+                    resources.add(createResource(route.getLocation(),
+                            route.getFullPath().replace("**", "v2/api-docs"), "2.0"));
+                }
+            }
+            return resources;
+        };
+    }
+
+    private SwaggerResource createResource(String name, String location, String version) {
+        SwaggerResource swaggerResource = new SwaggerResource();
+        swaggerResource.setName(name);
+        swaggerResource.setLocation(location);
+        swaggerResource.setSwaggerVersion(version);
+        return swaggerResource;
+    }
+
+}
+```
