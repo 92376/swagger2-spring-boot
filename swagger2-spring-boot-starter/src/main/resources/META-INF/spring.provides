@@ -1,1 +1,1 @@
-provides: springfox-swagger2,springfox-swagger-ui
+provides: springfox-boot-starter

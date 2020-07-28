@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.pystandard</groupId>
     <artifactId>swagger2-spring-boot</artifactId>
-    <version>1.0.0</version>
+    <version>3.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>swagger2-spring-boot-autoconfigure</module>
         <module>swagger2-spring-boot-starter</module>
     </modules>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- 文件拷贝时的编码 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- 编译时的编码 -->
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    </properties>
 
     <build>
         <plugins>
@@ -21,16 +31,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <inherited>true</inherited>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <version>3.8.0</version>
             </plugin>
             <!-- Source -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <inherited>true</inherited>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -46,7 +54,7 @@
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://192.168.0.169:8088/nexus/content/repositories/thirdparty/</url>
+            <url>http://192.168.0.156:8088/nexus/content/repositories/thirdparty/</url>
         </repository>
     </distributionManagement>
 

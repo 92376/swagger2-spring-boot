@@ -5,18 +5,21 @@
 <dependency>
     <groupId>com.pystandard</groupId>
     <artifactId>swagger2-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>3.0</version>
 </dependency>
 ```
 > 2、application-test.yml配置需要开启的环境
 ```yaml
-swagger2:
-  enable: true
+springfox:
+  documentation:
+#    enabled: false
+    title: 项目名称
+    version: 1.0.0
 ```
 > 3、注意注解了`io.swagger.annotations.Api`才会生成api文档；
 访问地址为
 ```
-http://${ip}:${port}/${contextPath}/swagger-ui.html
+http://${ip}:${port}/${contextPath}/swagger-ui
 ```
 > 4、zuul集成,同上,再添加整合配置类，代码如下
 ```java

@@ -8,13 +8,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author wujing
  * @since 2019/7/23 12:38
  */
-@ConfigurationProperties(prefix = "swagger2")
+@ConfigurationProperties(prefix = "springfox.documentation")
 public class Swagger2Properties {
 
     /**
      * 是否开启swagger2
      */
-    private boolean enable = false;
+    private boolean enabled = true;
 
     /**
      * Api标题
@@ -27,11 +27,11 @@ public class Swagger2Properties {
     private String version = "1.0.0";
 
     public boolean isEnable() {
-        return enable;
+        return enabled;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    public void setEnable(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getTitle() {

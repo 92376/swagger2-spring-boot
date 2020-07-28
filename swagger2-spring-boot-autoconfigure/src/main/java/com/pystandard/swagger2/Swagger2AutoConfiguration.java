@@ -16,60 +16,41 @@ import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.ModelRendering;
+import springfox.documentation.swagger.web.OperationsSorter;
+import springfox.documentation.swagger.web.TagsSorter;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
+ * http://springfox.github.io/springfox/docs/current/#springfox-spring-mvc-and-spring-boot
  * 自动装配
  *
  * @author wujing
  * @since 2019/7/23 11:53
  */
 @Configuration
-@EnableSwagger2
 @EnableConfigurationProperties(com.pystandard.swagger2.Swagger2Properties.class)
-@ConditionalOnProperty(prefix = "swagger2", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "springfox.documentation", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class Swagger2AutoConfiguration {
-
-    private Swagger2Properties swagger2Properties;
-
-    @Autowired
-    Swagger2AutoConfiguration(Swagger2Properties swagger2Properties) {
-        this.swagger2Properties = swagger2Properties;
-    }
 
     /**
      * header
      */
     private static final String HEADER = "header";
-
     /**
      * 全局header参数token
      */
     private static final String TOKEN = "token";
+    private final Swagger2Properties swagger2Properties;
 
-    @Bean
-    public Docket createRestApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                // 启用
-                .enable(true)
-                .select()
-                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
-                .paths(PathSelectors.any())
-                .build()
-                .securitySchemes(securitySchemes())
-                .securityContexts(securityContexts());
-    }
-
-    @Bean
-    public UiConfiguration uiConfiguration() {
-        UiConfigurationBuilder builder = UiConfigurationBuilder.builder();
-        return builder.filter(true).validatorUrl("").build();
+    @Autowired
+    Swagger2AutoConfiguration(Swagger2Properties swagger2Properties) {
+        this.swagger2Properties = swagger2Properties;
     }
 
     private ApiInfo apiInfo() {
@@ -79,33 +60,57 @@ public class Swagger2AutoConfiguration {
                 .build();
     }
 
-    private List<ApiKey> securitySchemes() {
-
-        List<ApiKey> list = new ArrayList<>();
-        list.add(new ApiKey(TOKEN, TOKEN, HEADER));
-        return list;
+    @Bean
+    public Docket petApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                .paths(PathSelectors.any())
+                .build()
+                .securitySchemes(Collections.singletonList(apiKey()))
+                .securityContexts(Collections.singletonList(securityContext()));
     }
 
-    private List<SecurityContext> securityContexts() {
+    private ApiKey apiKey() {
+        return new ApiKey(TOKEN, TOKEN, HEADER);
+    }
 
-        List<SecurityContext> list = new ArrayList<>();
-        list.add(SecurityContext.builder()
+    private SecurityContext securityContext() {
+
+        return SecurityContext.builder()
                 .securityReferences(defaultAuth())
-                .forPaths(PathSelectors.any())
-                .build());
-        return list;
+                .operationSelector(input -> input.requestMappingPattern().length() > 0)
+                .build();
     }
 
-    private List<SecurityReference> defaultAuth() {
-
-        List<SecurityReference> list = new ArrayList<>();
-        // 暂时不知道什么用
-        AuthorizationScope authorizationScope = new AuthorizationScope("", "");
+    List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope
+                = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        list.add(new SecurityReference(TOKEN, authorizationScopes));
+        return Collections.singletonList(new SecurityReference(TOKEN, authorizationScopes));
+    }
 
-        return list;
+    @Bean
+    UiConfiguration uiConfig() {
+        return UiConfigurationBuilder.builder()
+                .deepLinking(true)
+                .displayOperationId(false)
+                .defaultModelsExpandDepth(1)
+                .defaultModelExpandDepth(1)
+                .defaultModelRendering(ModelRendering.EXAMPLE)
+                .displayRequestDuration(false)
+                .docExpansion(DocExpansion.NONE)
+                .filter(true)
+                .maxDisplayedTags(null)
+                .operationsSorter(OperationsSorter.ALPHA)
+                .showExtensions(false)
+                .showCommonExtensions(false)
+                .tagsSorter(TagsSorter.ALPHA)
+                .supportedSubmitMethods(UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS)
+                .validatorUrl(null)
+                .build();
     }
 
 }
